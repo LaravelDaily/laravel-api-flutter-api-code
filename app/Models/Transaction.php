@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,15 @@ class Transaction extends Model
         return [
             'transaction_date' => 'date',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        if (auth()->check()) {
+            static::addGlobalScope('by_user', function (Builder $builder) {
+                $builder->where('user_id', auth()->id());
+            });
+        }
     }
 
     protected function amount(): Attribute
